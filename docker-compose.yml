@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  mongodb:
+    image: mongo:4
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+
+  orientdb:
+    image: orientdb:2.2
+    container_name: orientdb
+    ports:
+      - "2424:2424"
+      - "2480:2480"
+    # environment:
+    #   ORIENTDB_ROOT_USERNAME: root
+    #   ORIENTDB_ROOT_PASSWORD: root
+    
+    volumes:
+      - orientdb-data:/orientdb/databases
+      - orientdb-config:/orientdb/config
+    restart: always
+
+  jupyter:  
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    # image: jupyter/base-notebook
+    container_name: jupyter_notebook
+    ports: 
+      - "9999:9999"
+    volumes:
+      - ./notebooks:/home/jovyan/work
+      - ./data:/home/jovyan/work/datasets
+    # command: start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''
+    command: jupyter lab --allow-root --ip=0.0.0.0 --port=9999
+    restart: always
+
+volumes:
+  mongo-data:
+    driver: local
+  orientdb-data:
+    driver: local
+  orientdb-config:
+    driver: local

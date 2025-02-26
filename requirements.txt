@@ -1,0 +1,5 @@
+jupyter
+jupyterlab
+redis
+pymongo
+pyorient
